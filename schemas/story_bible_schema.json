@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org",
+  "$id": "https://github.com",
+  "title": "YourWritingPartnerStoryBible",
+  "description": "Single-source-of-truth structural and character schema for Stage 1 of the Your Writing Partner Engine.",
+  "type": "object",
+  "required": [
+    "project_metadata",
+    "structural_calibration",
+    "characters",
+    "plotlines",
+    "dramatic_stakes"
+  ],
+  "properties": {
+    "project_metadata": {
+      "type": "object",
+      "required": ["title", "medium", "genre", "tone", "tier"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "medium": { "type": "string", "enum": ["screenplay", "stage_play", "teleplay"] },
+        "genre": { "type": "string" },
+        "tone": { "type": "string" },
+        "tier": {
+          "type": "integer",
+          "enum":,
+          "description": "1: Short Scene (1-10p), 2: One-Act/Short (11-35p), 3: Half-Hour/Mid-Length (36-65p), 4: Full-Length Feature/Play (66-120p)"
+        },
+        "allow_melodrama_exception": {
+          "type": "boolean",
+          "default": false,
+          "description": "Explicitly relaxes heightened emotional tropes in the Quality Gate when genre requires melodrama."
+        }
+      }
+    },
+    "structural_calibration": {
+      "type": "object",
+      "required": [
+        "target_page_count",
+        "words_per_page_range",
+        "act_proportions",
+        "plotline_beat_ratios"
+      ],
+      "properties": {
+        "target_page_count": { "type": "integer", "minimum": 1, "maximum": 120 },
+        "words_per_page_range": {
+          "type": "object",
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "integer", "const": 150 },
+            "max": { "type": "integer", "const": 225 }
+          }
+        },
+        "act_proportions": {
+          "type": "object",
+          "required": ["act_1_pct", "act_2_pct", "act_3_pct"],
+          "properties": {
+            "act_1_pct": { "type": "number", "default": 0.25 },
+            "act_2_pct": { "type": "number", "default": 0.50 },
+            "act_3_pct": { "type": "number", "default": 0.25 }
+          }
+        },
+        "plotline_beat_ratios": {
+          "type": "object",
+          "required": ["a_story_pct", "b_story_pct", "c_story_pct"],
+          "properties": {
+            "a_story_pct": { "type": "number", "minimum": 0.5, "maximum": 1.0 },
+            "b_story_pct": { "type": "number", "minimum": 0.0, "maximum": 0.35 },
+            "c_story_pct": { "type": "number", "minimum": 0.0, "maximum": 0.20 }
+          }
+        }
+      }
+    },
+    "characters": {
+      "type": "object",
+      "required": ["protagonist", "antagonist"],
+      "properties": {
+        "protagonist": { "$ref": "#/$defs/characterProfile" },
+        "antagonist": { "$ref": "#/$defs/characterProfile" },
+        "supporting_cast": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/characterProfile" }
+        }
+      }
+    },
+    "plotlines": {
+      "type": "object",
+      "required": ["a_story"],
+      "properties": {
+        "a_story": {
+          "type": "object",
+          "required": ["premise", "inciting_incident", "midpoint_shift", "climax", "resolution"],
+          "properties": {
+            "premise": { "type": "string" },
+            "inciting_incident": { "type": "string" },
+            "midpoint_shift": { "type": "string" },
+            "climax": { "type": "string" },
+            "resolution": { "type": "string" }
+          }
+        },
+        "b_story": {
+          "type": "object",
+          "description": "Required for Tiers 2–4; carries thematic argument and primary relationship arc.",
+          "properties": {
+            "relationship_focus": { "type": "string" },
+            "thematic_argument": { "type": "string" },
+            "turning_point": { "type": "string" }
+          }
+        },
+        "c_story": {
+          "type": "object",
+          "description": "Optional subplot/runner for Tiers 3–4; mirrors or contrasts A-story stakes.",
+          "properties": {
+            "subplot_focus": { "type": "string" },
+            "payoff": { "type": "string" }
+          }
+        }
+      }
+    },
+    "dramatic_stakes": {
+      "type": "object",
+      "required": ["external_consequence", "internal_cost", "ticking_clock"],
+      "properties": {
+        "external_consequence": { "type": "string" },
+        "internal_cost": { "type": "string" },
+        "ticking_clock": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "characterProfile": {
+      "type": "object",
+      "required": [
+        "name",
+        "role",
+        "super_objective",
+        "psychological_flaw",
+        "strengths",
+        "home_life",
+        "voice_signature"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["protagonist", "antagonist", "b_story_catalyst", "supporting"] },
+        "super_objective": { "type": "string", "description": "What the character wants across the entire work." },
+        "psychological_flaw": { "type": "string", "description": "The internal blind spot obstructing their objective." },
+        "strengths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Core competencies or virtues that make the character active and formidable."
+        },
+        "home_life": { "type": "string", "description": "Baseline domestic, social, or economic reality prior to disruption." },
+        "voice_signature": {
+          "type": "object",
+          "required": ["cadence", "vocabulary_register", "verbal_tactic"],
+          "properties": {
+            "cadence": { "type": "string", "description": "e.g., clipped/terse, winding/deflective, rhythmic/formal" },
+            "vocabulary_register": { "type": "string" },
+            "verbal_tactic": { "type": "string", "description": "Primary conversational strategy under pressure." }
+          }
+        }
+      }
+    }
+  }
+}
